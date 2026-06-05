@@ -1119,7 +1119,13 @@ return `
       <div class="kpi-value" style="color:${loc.progress_dev >= 0 ? 'var(--green)' : 'var(--red)'}">${fmt.pct(loc.progress_actual)}</div>
       <div class="kpi-label">Progress Aktual</div>
       <div class="kpi-delta ${loc.progress_dev >= 0 ? 'positive' : 'negative'}">${fmt.pctS(loc.progress_dev)} vs rencana</div>
-    </div>` : ''}
+    </div>` : `
+    <div class="kpi-card" data-variant="purple">
+      <span class="kpi-icon">📈</span>
+      <div class="kpi-value" style="font-size:18px;line-height:28px;color:var(--text-muted)">—</div>
+      <div class="kpi-label">Progress Aktual</div>
+      <div class="kpi-delta" style="color:var(--text-muted)">Data belum tersedia</div>
+    </div>`}
   </div>
 
   <div class="content-grid" style="margin-bottom:20px">
