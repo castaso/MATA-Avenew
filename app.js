@@ -1052,23 +1052,23 @@ function renderPackagePage(pkgIdx) {
 }
 
 function renderLocationPanel(loc, pkgId, locIdx) {
-  const permitHtml = loc.permits.map(p => `
+  const permitHtml = loc.permits && loc.permits.length > 0 ? loc.permits.map(p => `
     <div class="permit-item">
       <div class="permit-name">${p.name}</div>
       <div class="permit-statuses">
         <span class="badge ${statusClass(p.status)}">${p.status}</span>
       </div>
-    </div>`).join('');
+    </div>`).join('') : '<div class="text-muted" style="font-size:13px;font-style:italic">Data perizinan belum tersedia</div>';
 
-  const workforceHtml = loc.workforce ? Object.entries(loc.workforce).map(([role, count]) => `
+  const workforceHtml = loc.workforce && Object.keys(loc.workforce).length > 0 ? Object.entries(loc.workforce).map(([role, count]) => `
     <div class="worker-chip">
       <div class="role">${role}</div>
       <div class="count">${count}</div>
-    </div>`).join('') : '';
+    </div>`).join('') : '<div class="text-muted" style="font-size:13px;font-style:italic">Data tenaga kerja belum tersedia</div>';
 
-  const weeklyHtml = loc.weekly ? buildWeeklyTableHtml(loc.weekly) : '';
+  const weeklyHtml = loc.weekly ? buildWeeklyTableHtml(loc.weekly) : '<div class="text-muted" style="font-size:13px;font-style:italic;text-align:center;padding:20px 0">Data tabel progress mingguan belum tersedia</div>';
 
-  const skHtml = loc.sk_sectors ? `
+  const skHtml = loc.sk_sectors && loc.sk_sectors.length > 0 ? `
   <div class="card">
     <div class="card-header"><div><h3>Capel & SK Terpasang per RS</h3></div></div>
     <div class="card-body" style="padding:0">
@@ -1087,7 +1087,13 @@ function renderLocationPanel(loc, pkgId, locIdx) {
         </tbody>
       </table>
     </div>
-  </div>` : '';
+  </div>` : `
+  <div class="card">
+    <div class="card-header"><div><h3>Capel & SK Terpasang per RS</h3></div></div>
+    <div class="card-body" style="display:flex;align-items:center;justify-content:center;min-height:100px;">
+      <div class="text-muted" style="font-size:13px;font-style:italic">Data Capel & SK Terpasang belum tersedia</div>
+    </div>
+  </div>`;
 
 return `
 <div id="loc-panel-${pkgId}-${locIdx}">
@@ -1117,17 +1123,6 @@ return `
   </div>
 
   <div class="content-grid" style="margin-bottom:20px">
-    ${loc.weekly ? `
-    <div class="card">
-      <div class="card-header">
-        <div><h3>S-Curve Progress – ${loc.name}</h3><p>Kumulatif Rencana vs Aktual</p></div>
-        <div class="scurve-legend">
-          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3)"></div>Rencana</div>
-          <div class="legend-item"><div class="legend-dot" style="background:#1e6aff"></div>Aktual</div>
-        </div>
-      </div>
-      <div class="card-body"><div class="chart-wrap"><canvas id="scurve-${pkgId}-${locIdx}"></canvas></div></div>
-    </div>` : `
     <div class="card">
       <div class="card-header">
         <div><h3>S-Curve Progress – ${loc.name}</h3><p>Kumulatif Rencana vs Aktual</p></div>
@@ -1137,45 +1132,35 @@ return `
         </div>
       </div>
       <div class="card-body">
-        <div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;font-style:italic">
-          Data S-Curve belum tersedia untuk lokasi ini
-        </div>
+        ${loc.weekly ? `<div class="chart-wrap"><canvas id="scurve-${pkgId}-${locIdx}"></canvas></div>` : `<div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;font-style:italic">Data S-Curve belum tersedia untuk lokasi ini</div>`}
       </div>
-    </div>`}
-
-    ${loc.konstruksi && loc.konstruksi.length > 0 ? `
+    </div>
     <div class="card">
       <div class="card-header"><div><h3>Konstruksi Terpasang (%)</h3><p>Per komponen</p></div></div>
-      <div class="card-body"><div class="chart-wrap short"><canvas id="bar-${pkgId}-${locIdx}"></canvas></div></div>
-    </div>` : `
-    <div class="card">
-      <div class="card-header"><div><h3>Tenaga Kerja – ${loc.name}</h3></div></div>
       <div class="card-body">
-        <div class="worker-chips">${workforceHtml}</div>
+        ${loc.konstruksi && loc.konstruksi.length > 0 ? `<div class="chart-wrap short"><canvas id="bar-${pkgId}-${locIdx}"></canvas></div>` : `<div class="chart-wrap short" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;font-style:italic">Data Konstruksi belum tersedia</div>`}
       </div>
-    </div>`}
+    </div>
   </div>
 
-  ${loc.weekly ? `
   <div class="content-grid" style="margin-bottom:20px">
     <div class="card col-span-2">
       <div class="card-header"><div><h3>Tabel Progress Mingguan</h3></div></div>
-      <div class="card-body weekly-table-wrap">${weeklyHtml}</div>
+      <div class="card-body ${loc.weekly ? 'weekly-table-wrap' : ''}">${weeklyHtml}</div>
     </div>
-  </div>` : ''}
+  </div>
 
   <div class="content-grid" style="margin-bottom:20px">
     <div class="card">
       <div class="card-header"><div><h3>Status Perizinan</h3></div></div>
       <div class="card-body"><div class="permit-grid">${permitHtml}</div></div>
     </div>
-    ${loc.konstruksi && loc.konstruksi.length > 0 ? `
     <div class="card">
       <div class="card-header"><div><h3>Tenaga Kerja</h3></div></div>
       <div class="card-body">
         <div class="worker-chips">${workforceHtml}</div>
       </div>
-    </div>` : ''}
+    </div>
   </div>
 
   ${skHtml}
