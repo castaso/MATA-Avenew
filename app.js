@@ -633,7 +633,7 @@ function buildBarChart(canvasId, konstruksi) {
       ...getChartDefaults(),
       scales: {
         ...getChartDefaults().scales,
-        y: { ...CHART_DEFAULTS.scales.y, max: 105 }
+        y: { ...getChartDefaults().scales.y, max: 105 }
       },
       plugins: {
         ...getChartDefaults().plugins,
