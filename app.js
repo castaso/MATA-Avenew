@@ -1129,16 +1129,17 @@ return `
       <div class="card-body"><div class="chart-wrap"><canvas id="scurve-${pkgId}-${locIdx}"></canvas></div></div>
     </div>` : `
     <div class="card">
-      <div class="card-header"><div><h3>Profil Proyek – ${loc.name}</h3></div></div>
+      <div class="card-header">
+        <div><h3>S-Curve Progress – ${loc.name}</h3><p>Kumulatif Rencana vs Aktual</p></div>
+        <div class="scurve-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3)"></div>Rencana</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#1e6aff"></div>Aktual</div>
+        </div>
+      </div>
       <div class="card-body">
-        <table class="data-table">
-          <tbody>
-            <tr><td>Ruang Lingkup</td><td class="highlight">${fmt.num(loc.sr)} SR</td></tr>
-            <tr><td>Nilai Kontrak</td><td class="highlight">${fmt.rp(loc.contract)}</td></tr>
-            <tr><td>Jam Kerja Aman</td><td class="highlight positive">${fmt.num(loc.safe_hours)} Jam</td></tr>
-            <tr><td>Progress Fisik</td><td>${loc.progress_actual != null ? `<span class="${devClass(loc.progress_dev)}">${fmt.pct(loc.progress_actual)}</span>` : '<span class="text-muted">Data tidak tersedia</span>'}</td></tr>
-          </tbody>
-        </table>
+        <div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:13px;font-style:italic">
+          Data S-Curve belum tersedia untuk lokasi ini
+        </div>
       </div>
     </div>`}
 
