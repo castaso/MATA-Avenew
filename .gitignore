@@ -1,0 +1,35 @@
+﻿# OS generated files
+.DS_Store
+desktop.ini
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.pyc
+
+# Node
+node_modules/
+npm-debug.log
+.npm
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+
+# Temp / dev-only scripts
+verify_data.py
+verify_data2.py

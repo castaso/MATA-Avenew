@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATA Dashboard – Jargas Gabungan Weekly Ke-11 | KESDM</title>
+  <meta name="description" content="Dashboard monitoring dan tracking progress pembangunan Jaringan Gas Bumi untuk Rumah Tangga – Minggu ke-11, Februari 2026. Mencakup 5 paket pekerjaan, 115.264 SR di seluruh Indonesia.">
+  <meta name="theme-color" content="#080c14">
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="logo-badge">
+        <div class="logo-icon">🔵</div>
+        <span class="logo-text">MATA</span>
+      </div>
+      <div class="logo-sub">Monitoring & Tracking Activities<br>Dashboard Jargas Gabungan W-11</div>
+    </div>
+
+    <nav class="sidebar-nav">
+
+      <div class="nav-section">
+        <div class="nav-section-title">Ringkasan</div>
+        <button class="nav-item" data-page="overview" id="nav-overview">
+          <span class="nav-icon">📊</span>
+          <span>Overview Gabungan</span>
+          <span class="nav-badge">5</span>
+        </button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Per Paket Pekerjaan</div>
+
+        <button class="nav-item" data-page="pkg1" id="nav-pkg1">
+          <span class="nav-icon">📍</span>
+          <span>Paket 1 – Jambi Region</span>
+        </button>
+
+        <button class="nav-item" data-page="pkg2" id="nav-pkg2">
+          <span class="nav-icon">📍</span>
+          <span>Paket 2 – MUBA · OKUT · IDM</span>
+        </button>
+
+        <button class="nav-item" data-page="pkg3" id="nav-pkg3">
+          <span class="nav-icon">📍</span>
+          <span>Paket 3 – Batang · Kendal · Wajo</span>
+        </button>
+
+        <button class="nav-item" data-page="pkg4" id="nav-pkg4">
+          <span class="nav-icon">📍</span>
+          <span>Paket 4 – Demak · Bontang · TTD</span>
+        </button>
+
+        <button class="nav-item" data-page="pkg5" id="nav-pkg5">
+          <span class="nav-icon">📍</span>
+          <span>Paket 5 – Gresik · Sidoarjo · SMD</span>
+        </button>
+      </div>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div>Direktorat Perencanaan &amp;</div>
+      <div>Pembangunan Infrastruktur Migas</div>
+      <div style="margin-top:4px;color:var(--text-primary);font-weight:600">KEMENTERIAN ESDM</div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════ -->
+  <div class="main">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1 id="topbar-title">Dashboard Gabungan – W11</h1>
+        <p id="topbar-sub">Ringkasan seluruh paket pekerjaan Jargas</p>
+      </div>
+      <div class="topbar-chips">
+        <span class="chip chip-blue">📅 28 Jan – 04 Feb 2026</span>
+        <span class="chip chip-yellow">⏱ W11 of 34</span>
+        <span class="chip chip-green">🏘️ 115.264 SR</span>
+      </div>
+    </header>
+
+    <!-- Pages -->
+    <main>
+
+      <!-- Overview -->
+      <section class="page" id="page-overview">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
+          <span>Memuat data…</span>
+        </div>
+      </section>
+
+      <!-- Paket 1 -->
+      <section class="page" id="page-pkg1">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
+          <span>Memuat Paket 1…</span>
+        </div>
+      </section>
+
+      <!-- Paket 2 -->
+      <section class="page" id="page-pkg2">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
+          <span>Memuat Paket 2…</span>
+        </div>
+      </section>
+
+      <!-- Paket 3 -->
+      <section class="page" id="page-pkg3">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
+          <span>Memuat Paket 3…</span>
+        </div>
+      </section>
+
+      <!-- Paket 4 -->
+      <section class="page" id="page-pkg4">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
+          <span>Memuat Paket 4…</span>
+        </div>
+      </section>
+
+      <!-- Paket 5 -->
+      <section class="page" id="page-pkg5">
+        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
+          <span>Memuat Paket 5…</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
