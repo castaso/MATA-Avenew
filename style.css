@@ -784,3 +784,34 @@ a { text-decoration: none; color: inherit; }
 [data-theme="light"] .pkg-overview-card:hover::after {
   opacity: 0.15;
 }
+
+/* ── Nested Navigation ────────────────────────────────────── */
+.nav-pkg-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  padding: 6px 10px 4px;
+  margin-top: 10px;
+}
+.nav-item.nested {
+  padding-left: 26px;
+  font-size: 12px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.nav-item.nested::before {
+  content: '';
+  position: absolute;
+  left: 12px; top: 50%;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transform: translateY(-50%);
+}
+.nav-item.nested.active::before {
+  background: var(--blue);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  left: 11px;
+}

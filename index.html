@@ -37,33 +37,8 @@
         </button>
       </div>
 
-      <div class="nav-section">
-        <div class="nav-section-title">Per Paket Pekerjaan</div>
-
-        <button class="nav-item" data-page="pkg1" id="nav-pkg1">
-          <span class="nav-icon">📍</span>
-          <span>Paket 1 – Jambi Region</span>
-        </button>
-
-        <button class="nav-item" data-page="pkg2" id="nav-pkg2">
-          <span class="nav-icon">📍</span>
-          <span>Paket 2 – MUBA · OKUT · IDM</span>
-        </button>
-
-        <button class="nav-item" data-page="pkg3" id="nav-pkg3">
-          <span class="nav-icon">📍</span>
-          <span>Paket 3 – Batang · Kendal · Wajo</span>
-        </button>
-
-        <button class="nav-item" data-page="pkg4" id="nav-pkg4">
-          <span class="nav-icon">📍</span>
-          <span>Paket 4 – Demak · Bontang · TTD</span>
-        </button>
-
-        <button class="nav-item" data-page="pkg5" id="nav-pkg5">
-          <span class="nav-icon">📍</span>
-          <span>Paket 5 – Gresik · Sidoarjo · SMD</span>
-        </button>
+      <div class="nav-section" id="dynamic-nav">
+        <!-- Dynamic sidebar items injected here -->
       </div>
 
     </nav>
@@ -106,39 +81,9 @@
         </div>
       </section>
 
-      <!-- Paket 1 -->
-      <section class="page" id="page-pkg1">
-        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
-          <span>Memuat Paket 1…</span>
-        </div>
-      </section>
-
-      <!-- Paket 2 -->
-      <section class="page" id="page-pkg2">
-        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
-          <span>Memuat Paket 2…</span>
-        </div>
-      </section>
-
-      <!-- Paket 3 -->
-      <section class="page" id="page-pkg3">
-        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
-          <span>Memuat Paket 3…</span>
-        </div>
-      </section>
-
-      <!-- Paket 4 -->
-      <section class="page" id="page-pkg4">
-        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
-          <span>Memuat Paket 4…</span>
-        </div>
-      </section>
-
-      <!-- Paket 5 -->
-      <section class="page" id="page-pkg5">
-        <div style="display:flex;align-items:center;justify-content:center;min-height:300px;color:var(--text-muted)">
-          <span>Memuat Paket 5…</span>
-        </div>
+      <!-- Dynamic Location Page -->
+      <section class="page" id="page-location">
+        <div id="location-content"></div>
       </section>
 
     </main>

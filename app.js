@@ -866,100 +866,10 @@ ${pkgs.map(pkg => `
   document.getElementById('page-overview').innerHTML = html;
 }
 
-/* ─── Package Page ───────────────────────────────────────── */
-function renderPackagePage(pkgId) {
-  const pkg = DATA.packages[pkgId - 1];
-  const pageEl = document.getElementById(`page-pkg${pkgId}`);
-  if (!pageEl) return;
-
-  const locTabsHtml = pkg.locations.map((loc, i) =>
-    `<button class="seg-btn${i === 0 ? ' active' : ''}" onclick="switchLocation(${pkgId}, ${i}, this)">${loc.code} – ${loc.name}</button>`
-  ).join('');
-
-  const locPanelsHtml = pkg.locations.map((loc, i) => renderLocationPanel(loc, pkgId, i)).join('');
-
-  const html = `
-<div class="section-header">
-  <div>
-    <h2><span style="color:${pkg.color}">Paket ${pkg.id}</span> — ${pkg.name}</h2>
-    <p>EPC: <strong>${pkg.epc}</strong> &nbsp;·&nbsp; PMC: <strong>${pkg.pmc}</strong> &nbsp;·&nbsp; ${pkg.duration} sejak ${pkg.start}</p>
-  </div>
-  <div class="topbar-chips">
-    <span class="chip chip-blue">⏱ W11 of 34</span>
-    ${pkg.tkdn ? `<span class="chip chip-green">TKDN ${pkg.tkdn}%</span>` : ''}
-  </div>
-</div>
-
-<div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
-  <div class="kpi-card" data-variant="blue">
-    <span class="kpi-icon">🏘️</span>
-    <div class="kpi-value">${fmt.num(pkg.total_sr)}</div>
-    <div class="kpi-label">Total SR</div>
-  </div>
-  <div class="kpi-card" data-variant="teal">
-    <span class="kpi-icon">💰</span>
-    <div class="kpi-value">${fmt.rp(pkg.contract_value)}</div>
-    <div class="kpi-label">Nilai Kontrak</div>
-  </div>
-  <div class="kpi-card" data-variant="green">
-    <span class="kpi-icon">🛡️</span>
-    <div class="kpi-value">${fmt.jam(pkg.safe_hours)}</div>
-    <div class="kpi-label">Jam Kerja Aman</div>
-  </div>
-  ${pkg.progress_actual != null ? `
-  <div class="kpi-card" data-variant="${pkg.progress_dev >= 0 ? 'green' : 'red'}">
-    <span class="kpi-icon">${pkg.progress_dev >= 0 ? '📈' : '📉'}</span>
-    <div class="kpi-value" style="color:${pkg.progress_dev >= 0 ? 'var(--green)' : 'var(--red)'}">${fmt.pct(pkg.progress_actual)}</div>
-    <div class="kpi-label">Progress Aktual (Gabungan)</div>
-    <div class="kpi-delta ${pkg.progress_dev >= 0 ? 'positive' : 'negative'}">${fmt.pctS(pkg.progress_dev)} vs rencana ${fmt.pct(pkg.progress_plan)}</div>
-  </div>` : `
-  <div class="kpi-card" data-variant="yellow">
-    <span class="kpi-icon">📍</span>
-    <div class="kpi-value">${pkg.locations.length}</div>
-    <div class="kpi-label">Lokasi / Kabupaten</div>
-  </div>`}
-  ${pkg.manpower ? `
-  <div class="kpi-card" data-variant="purple">
-    <span class="kpi-icon">👷</span>
-    <div class="kpi-value">${pkg.manpower}</div>
-    <div class="kpi-label">Total Manpower</div>
-  </div>` : ''}
-</div>
-
-${pkg.weekly_combined ? `
-<div class="card" style="margin-bottom:20px">
-  <div class="card-header">
-    <div><h3>S-Curve Progress Gabungan – Paket ${pkg.id}</h3><p>Kumulatif Rencana vs Aktual</p></div>
-    <div class="scurve-legend">
-      <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3);border:2px dashed rgba(255,255,255,0.4)"></div>Kum. Rencana</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#1e6aff"></div>Kum. Aktual</div>
-    </div>
-  </div>
-  <div class="card-body"><div class="chart-wrap tall"><canvas id="scurve-combined-pkg${pkg.id}"></canvas></div></div>
-</div>` : ''}
-
-<div style="margin-bottom:16px">
-  <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Detail per Lokasi</div>
-  <div class="seg-btns" id="loc-tabs-pkg${pkg.id}">${locTabsHtml}</div>
-</div>
-
-<div id="loc-panels-pkg${pkg.id}">
-  ${locPanelsHtml}
-</div>`;
-
-  pageEl.innerHTML = html;
-
-  // Render combined S-curve
-  if (pkg.weekly_combined) {
-    setTimeout(() => buildSCurveChart(`scurve-combined-pkg${pkg.id}`, pkg.weekly_combined), 100);
-  }
-
-  // Render first location's charts
-  setTimeout(() => renderLocationCharts(pkg.locations[0], pkgId, 0), 150);
-}
+/* ─── Package Page (Removed) ─────────────────────────────── */
+// Package view was removed in favour of dedicated location pages.
 
 function renderLocationPanel(loc, pkgId, locIdx) {
-  const visible = locIdx === 0 ? '' : 'style="display:none"';
   const permitHtml = loc.permits.map(p => `
     <div class="permit-item">
       <div class="permit-name">${p.name}</div>
@@ -997,8 +907,8 @@ function renderLocationPanel(loc, pkgId, locIdx) {
     </div>
   </div>` : '';
 
-  return `
-<div id="loc-panel-${pkgId}-${locIdx}" ${visible}>
+return `
+<div id="loc-panel-${pkgId}-${locIdx}">
   <div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr));margin-bottom:20px">
     <div class="kpi-card" data-variant="blue">
       <span class="kpi-icon">🏘️</span>
@@ -1131,58 +1041,49 @@ function navigateTo(pageKey) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-  // Show target
-  const target = document.getElementById(`page-${pageKey}`);
-  if (target) target.classList.add('active');
-
+  // Highlight nav button
   const navBtn = document.querySelector(`[data-page="${pageKey}"]`);
   if (navBtn) navBtn.classList.add('active');
 
-  // Render page if not yet rendered
-  if (!renderedPages.has(pageKey)) {
-    renderedPages.add(pageKey);
-    if (pageKey === 'overview') {
+  if (pageKey === 'overview') {
+    const target = document.getElementById('page-overview');
+    if (target) target.classList.add('active');
+    
+    if (!renderedPages.has(pageKey)) {
+      renderedPages.add(pageKey);
       renderOverview();
-    } else if (pageKey.startsWith('pkg')) {
-      const pkgId = parseInt(pageKey.replace('pkg', ''));
-      renderPackagePage(pkgId);
     }
+    
+    document.getElementById('topbar-title').textContent = 'Dashboard Gabungan – W11';
+    document.getElementById('topbar-sub').textContent = 'Ringkasan seluruh paket pekerjaan Jargas';
+  } else if (pageKey.startsWith('loc-')) {
+    const target = document.getElementById('page-location');
+    if (target) target.classList.add('active');
+    
+    const parts = pageKey.split('-');
+    const pkgId = parseInt(parts[1]);
+    const locIdx = parseInt(parts[2]);
+    renderLocationPage(pkgId, locIdx);
+    
+    const pkg = DATA.packages[pkgId - 1];
+    const loc = pkg.locations[locIdx];
+    document.getElementById('topbar-title').textContent = `${loc.name}`;
+    document.getElementById('topbar-sub').textContent = `Paket ${pkg.id} – ${pkg.name} | ${fmt.num(loc.sr)} SR`;
   }
 
   currentPage = pageKey;
-
-  // Update topbar
-  const titles = {
-    overview: ['Dashboard Gabungan – W11', 'Ringkasan seluruh paket pekerjaan Jargas'],
-    pkg1: ['Paket 1 – Jambi Region', 'Kota Jambi · Kab. TJB · Kab. Pelalawan | 22,972 SR'],
-    pkg2: ['Paket 2 – Sumatra + Jabar', 'Kab. MUBA · Kab. OKUT · Kab. Indramayu | 22,087 SR'],
-    pkg3: ['Paket 3 – Jateng + Sulsel', 'Kab. Batang · Kab. Kendal · Kab. Wajo | 22,213 SR'],
-    pkg4: ['Paket 4 – Jateng + Kaltara', 'Kab. Demak · Kota Bontang · Kab. Tana Tidung | 26,137 SR'],
-    pkg5: ['Paket 5 – Jatim + Kaltim', 'Kab. Gresik · Kab. Sidoarjo · Kota Samarinda | 21,855 SR'],
-  };
-  const t = titles[pageKey] || [pageKey, ''];
-  document.getElementById('topbar-title').textContent = t[0];
-  document.getElementById('topbar-sub').textContent = t[1];
 }
 
-function switchLocation(pkgId, locIdx, btn) {
-  // Hide all panels for this package
+function renderLocationPage(pkgId, locIdx) {
   const pkg = DATA.packages[pkgId - 1];
-  pkg.locations.forEach((_, i) => {
-    const panel = document.getElementById(`loc-panel-${pkgId}-${i}`);
-    if (panel) panel.style.display = 'none';
-  });
-  // Show target
-  const target = document.getElementById(`loc-panel-${pkgId}-${locIdx}`);
-  if (target) target.style.display = '';
+  const loc = pkg.locations[locIdx];
+  const container = document.getElementById('location-content');
+  if (!container) return;
 
-  // Update tab buttons
-  const tabContainer = document.getElementById(`loc-tabs-pkg${pkgId}`);
-  if (tabContainer) tabContainer.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  container.innerHTML = renderLocationPanel(loc, pkgId, locIdx);
 
-  // Render charts for this location (deferred)
-  setTimeout(() => renderLocationCharts(pkg.locations[locIdx], pkgId, locIdx), 80);
+  // Render charts for this location
+  setTimeout(() => renderLocationCharts(loc, pkgId, locIdx), 80);
 }
 
 /* ── ⑦ INIT ──────────────────────────────────────────────── */
@@ -1214,6 +1115,23 @@ document.addEventListener('DOMContentLoaded', () => {
       renderedPages.clear(); 
       navigateTo(currentPage);
     });
+  }
+
+  // Generate Dynamic Sidebar
+  const navContainer = document.getElementById('dynamic-nav');
+  if (navContainer && DATA && DATA.packages) {
+    let navHtml = '';
+    DATA.packages.forEach(pkg => {
+      navHtml += `<div class="nav-pkg-label">Paket ${pkg.id} – ${pkg.short || pkg.name.split(' ')[0]}</div>`;
+      pkg.locations.forEach((loc, i) => {
+        navHtml += `
+          <button class="nav-item nested" data-page="loc-${pkg.id}-${i}">
+            <span>${loc.name}</span>
+          </button>
+        `;
+      });
+    });
+    navContainer.innerHTML = navHtml;
   }
 
   // Setup nav items
