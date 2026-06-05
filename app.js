@@ -866,8 +866,190 @@ ${pkgs.map(pkg => `
   document.getElementById('page-overview').innerHTML = html;
 }
 
-/* ─── Package Page (Removed) ─────────────────────────────── */
-// Package view was removed in favour of dedicated location pages.
+/* ─── Package Page ───────────────────────────────────────── */
+function renderPackagePage(pkgIdx) {
+  const pkg = DATA.packages[pkgIdx];
+  const container = document.getElementById('package-content');
+  if (!container) return;
+
+  // Aggregated workforce
+  const allWorkers = {};
+  pkg.locations.forEach(loc => {
+    if (loc.workforce) {
+      Object.entries(loc.workforce).forEach(([role, count]) => {
+        allWorkers[role] = (allWorkers[role] || 0) + count;
+      });
+    }
+  });
+  const totalWorkers = Object.values(allWorkers).reduce((a, b) => a + b, 0);
+
+  // Count permits
+  let totalPermits = 0, closedPermits = 0;
+  pkg.locations.forEach(loc => {
+    if (loc.permits) {
+      totalPermits += loc.permits.length;
+      closedPermits += loc.permits.filter(p => {
+        const u = (p.status || '').toUpperCase();
+        return u === 'CLOSED' || u === 'CLOSE';
+      }).length;
+    }
+  });
+
+  const html = `
+<div class="section-header">
+  <div>
+    <h2 style="color:${pkg.color}">📦 Paket ${pkg.id} – ${pkg.name}</h2>
+    <p>${pkg.epc} &nbsp;|&nbsp; PMC: ${pkg.pmc}</p>
+  </div>
+  <div class="topbar-chips">
+    <span class="chip chip-blue">📅 ${pkg.duration}</span>
+    <span class="chip chip-yellow">🚀 Start: ${pkg.start}</span>
+    ${pkg.tkdn ? `<span class="chip chip-green">🏭 TKDN ${pkg.tkdn}%</span>` : ''}
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card" data-variant="blue">
+    <span class="kpi-icon">🏘️</span>
+    <div class="kpi-value">${fmt.num(pkg.total_sr)}</div>
+    <div class="kpi-label">Total SR</div>
+  </div>
+  <div class="kpi-card" data-variant="teal">
+    <span class="kpi-icon">💰</span>
+    <div class="kpi-value">${fmt.rp(pkg.contract_value)}</div>
+    <div class="kpi-label">Nilai Kontrak</div>
+  </div>
+  <div class="kpi-card" data-variant="green">
+    <span class="kpi-icon">🛡️</span>
+    <div class="kpi-value">${fmt.jam(pkg.safe_hours)}</div>
+    <div class="kpi-label">Jam Kerja Aman</div>
+  </div>
+  <div class="kpi-card" data-variant="yellow">
+    <span class="kpi-icon">👷</span>
+    <div class="kpi-value">${fmt.num(totalWorkers)}</div>
+    <div class="kpi-label">Total Manpower</div>
+  </div>
+  ${pkg.progress_actual != null ? `
+  <div class="kpi-card" data-variant="${pkg.progress_dev >= 0 ? 'green' : 'red'}">
+    <span class="kpi-icon">${pkg.progress_dev >= 0 ? '📈' : '📉'}</span>
+    <div class="kpi-value" style="color:${pkg.progress_dev >= 0 ? 'var(--green)' : 'var(--red)'}">${fmt.pct(pkg.progress_actual)}</div>
+    <div class="kpi-label">Progress Aktual</div>
+    <div class="kpi-delta ${pkg.progress_dev >= 0 ? 'positive' : 'negative'}">${fmt.pctS(pkg.progress_dev)} vs rencana</div>
+  </div>` : ''}
+  <div class="kpi-card" data-variant="purple">
+    <span class="kpi-icon">📋</span>
+    <div class="kpi-value">${closedPermits}/${totalPermits}</div>
+    <div class="kpi-label">Izin Selesai</div>
+  </div>
+</div>
+
+<div class="content-grid" style="margin-bottom:20px">
+  ${(pkg.weekly_combined || pkg.progress_actual != null) ? `
+  <div class="card">
+    <div class="card-header">
+      <div><h3>S-Curve Progress – Paket ${pkg.id}</h3><p>Kumulatif Rencana vs Aktual</p></div>
+      <div class="scurve-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3)"></div>Rencana</div>
+        <div class="legend-item"><div class="legend-dot" style="background:${pkg.color}"></div>Aktual</div>
+      </div>
+    </div>
+    <div class="card-body"><div class="chart-wrap"><canvas id="scurve-pkg-${pkg.id}"></canvas></div></div>
+  </div>` : ''}
+
+  ${pkg.progress_actual != null ? `
+  <div class="card">
+    <div class="card-header"><div><h3>Donut Progress</h3><p>Realisasi Paket ${pkg.id}</p></div></div>
+    <div class="card-body" style="display:flex;justify-content:center;align-items:center">
+      <div style="width:200px;height:200px;position:relative">
+        <canvas id="donut-pkg-${pkg.id}"></canvas>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+          <div style="font-size:22px;font-weight:800;color:${pkg.color}">${fmt.pct(pkg.progress_actual)}</div>
+          <div style="font-size:10px;color:var(--text-muted)">Aktual</div>
+        </div>
+      </div>
+    </div>
+  </div>` : ''}
+</div>
+
+<h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:14px">Progress per Lokasi</h3>
+<div class="content-grid" style="margin-bottom:20px">
+  <div class="card col-span-2">
+    <div class="card-body">
+      ${pkg.locations.map((loc, i) => {
+        const hasProgress = loc.progress_actual != null;
+        const devCls = hasProgress ? barActualClass(loc.progress_dev) : '';
+        return `
+        <div class="prog-row" style="cursor:pointer" onclick="navigateTo('loc-${pkg.id}-${i}')">
+          <div class="prog-meta">
+            <span class="prog-label">${loc.name} <span style="font-size:10px;color:var(--text-muted)">(${loc.code})</span></span>
+            <div class="prog-values">
+              ${hasProgress ? `
+              <span class="prog-plan">${fmt.pct(loc.progress_plan)}</span>
+              <span class="prog-actual" style="color:${devCls === 'ahead' ? 'var(--green)' : devCls === 'behind' ? 'var(--red)' : 'var(--blue)'}">${fmt.pct(loc.progress_actual)}</span>
+              <span class="prog-dev ${devProg(loc.progress_dev)}">${fmt.pctS(loc.progress_dev)}</span>
+              ` : `<span style="font-size:11px;color:var(--text-muted);font-style:italic">Data tersedia di halaman lokasi →</span>`}
+            </div>
+          </div>
+          ${hasProgress ? `
+          <div class="prog-bar-track">
+            <div class="prog-bar-plan" style="width:${loc.progress_plan}%"></div>
+            <div class="prog-bar-actual ${devCls}" style="width:${Math.min(loc.progress_actual,100)}%"></div>
+          </div>` : `
+          <div class="prog-bar-track">
+            <div class="prog-bar-plan" style="width:0%"></div>
+          </div>`}
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+</div>
+
+<h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:14px">Tenaga Kerja Gabungan</h3>
+<div class="content-grid" style="margin-bottom:20px">
+  <div class="card col-span-2">
+    <div class="card-body">
+      <div class="worker-chips">
+        ${Object.entries(allWorkers).map(([role, count]) => `
+          <div class="worker-chip">
+            <div class="role">${role}</div>
+            <div class="count">${count}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:14px">Status Perizinan per Lokasi</h3>
+<div class="content-grid" style="margin-bottom:20px">
+  ${pkg.locations.map((loc, i) => `
+  <div class="card">
+    <div class="card-header"><div><h3>${loc.name}</h3><p>${loc.permits ? loc.permits.length + ' izin' : 'Belum ada data'}</p></div></div>
+    <div class="card-body">
+      <div class="permit-grid">
+        ${(loc.permits || []).map(p => `
+          <div class="permit-item">
+            <div class="permit-name">${p.name}</div>
+            <div class="permit-statuses"><span class="badge ${statusClass(p.status)}">${p.status}</span></div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`).join('')}
+</div>
+`;
+
+  container.innerHTML = html;
+
+  // Render charts
+  setTimeout(() => {
+    const weekly = pkg.weekly_combined;
+    if (weekly) {
+      buildSCurveChart(`scurve-pkg-${pkg.id}`, weekly);
+    }
+    if (pkg.progress_actual != null) {
+      buildDonutChart(`donut-pkg-${pkg.id}`, pkg);
+    }
+  }, 80);
+}
 
 function renderLocationPanel(loc, pkgId, locIdx) {
   const permitHtml = loc.permits.map(p => `
@@ -1056,6 +1238,16 @@ function navigateTo(pageKey) {
     
     document.getElementById('topbar-title').textContent = 'Dashboard Gabungan – W11';
     document.getElementById('topbar-sub').textContent = 'Ringkasan seluruh paket pekerjaan Jargas';
+  } else if (pageKey.startsWith('pkg')) {
+    const target = document.getElementById('page-package');
+    if (target) target.classList.add('active');
+    
+    const pkgIdx = parseInt(pageKey.replace('pkg', '')) - 1;
+    const pkg = DATA.packages[pkgIdx];
+    renderPackagePage(pkgIdx);
+    
+    document.getElementById('topbar-title').textContent = `Paket ${pkg.id} – ${pkg.short}`;
+    document.getElementById('topbar-sub').textContent = `${pkg.name} | ${pkg.epc} | ${fmt.num(pkg.total_sr)} SR`;
   } else if (pageKey.startsWith('loc-')) {
     const target = document.getElementById('page-location');
     if (target) target.classList.add('active');
@@ -1122,7 +1314,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (navContainer && DATA && DATA.packages) {
     let navHtml = '';
     DATA.packages.forEach(pkg => {
-      navHtml += `<div class="nav-pkg-label">Paket ${pkg.id} – ${pkg.short || pkg.name.split(' ')[0]}</div>`;
+      navHtml += `
+        <button class="nav-item nav-pkg-btn" data-page="pkg${pkg.id}">
+          <span class="nav-icon" style="font-size:11px">📦</span>
+          <span>Paket ${pkg.id} – ${pkg.short || pkg.name.split(' ')[0]}</span>
+        </button>`;
       pkg.locations.forEach((loc, i) => {
         navHtml += `
           <button class="nav-item nested" data-page="loc-${pkg.id}-${i}">
