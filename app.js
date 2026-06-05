@@ -573,6 +573,24 @@ function buildSCurveChart(canvasId, weekly) {
   destroyChart(canvasId);
   const el = document.getElementById(canvasId);
   if (!el || !weekly) return;
+
+  const planLength = weekly.plan.length;
+  const projectionData = Array(planLength).fill(null);
+  
+  // Find last actual non-null point
+  let lastActualIdx = -1;
+  for (let i = planLength - 1; i >= 0; i--) {
+    if (weekly.actual[i] != null) {
+      lastActualIdx = i;
+      break;
+    }
+  }
+
+  if (lastActualIdx >= 0 && lastActualIdx < planLength - 1) {
+    projectionData[lastActualIdx] = weekly.actual[lastActualIdx];
+    projectionData[planLength - 1] = weekly.plan[planLength - 1]; // Project to final plan target
+  }
+
   charts[canvasId] = new Chart(el, {
     type: 'line',
     data: {
@@ -602,6 +620,18 @@ function buildSCurveChart(canvasId, weekly) {
           pointHoverRadius: 6,
           tension: 0.35,
           spanGaps: false
+        },
+        {
+          label: 'Proyeksi',
+          data: projectionData,
+          borderColor: '#ffc107',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [4, 4],
+          pointRadius: 3,
+          pointBackgroundColor: '#ffc107',
+          tension: 0,
+          spanGaps: true
         }
       ]
     },
@@ -1135,6 +1165,7 @@ return `
         <div class="scurve-legend">
           <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.3)"></div>Rencana</div>
           <div class="legend-item"><div class="legend-dot" style="background:#1e6aff"></div>Aktual</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ffc107"></div>Proyeksi</div>
         </div>
       </div>
       <div class="card-body">
