@@ -118,10 +118,10 @@ const DATA = {
             { name: "Sosialisasi Pemerintahan", status: "CLOSED" }
           ],
           weekly: {
-            labels: ["W9","W10","W11","W12","W13","W14","W15","W16","W17"],
-            plan:   [61.126,63.429,65.453,67.558,69.513,71.377,73.100,74.818,76.761],
-            actual: [55.710,57.311,58.104,null,null,null,null,null,null],
-            current_week: 2
+            labels: ["W1","W2","W3","W4","W5","W6","W7","W8","W9","W10","W11","W12","W13","W14","W15","W16","W17","W18","W19","W20","W21","W22","W23","W24","W25","W26","W27","W28","W29","W30","W31","W32","W33","W34"],
+            plan:   [0.0, 9.5, 28.0, 45.0, 49.5, 53.0, 56.5, 59.0, 61.126, 63.429, 65.453, 67.558, 69.513, 71.377, 73.100, 74.818, 76.761, 79.0, 81.5, 83.5, 85.0, 87.0, 88.5, 90.0, 92.0, 93.5, 94.5, 96.0, 98.0, 100.0, 100.0, 100.0, 100.0, 100.0],
+            actual: [3.5, 32.0, 46.5, 50.0, 53.0, 54.0, 55.0, 55.5, 55.710, 57.311, 58.104, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+            current_week: 11
           },
           konstruksi: [
             { item: "PE 63 mm", pct: 63.035 },
