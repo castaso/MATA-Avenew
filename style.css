@@ -743,3 +743,44 @@ a { text-decoration: none; color: inherit; }
 .mt-16 { margin-top: 16px; }
 .mb-12 { margin-bottom: 12px; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* ── Light Theme (Avenew Branding) ─────────────────────────── */
+[data-theme="light"] {
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-glass: rgba(255, 255, 255, 0.9);
+
+  /* Avenew Colors */
+  --blue: #3282B8;
+  --cyan: #3282B8; /* fallback for blue contexts */
+  --red: #E63946;
+  
+  --grad-primary: linear-gradient(135deg, #3282B8 0%, #1e5a84 100%);
+  --grad-danger: linear-gradient(135deg, #E63946 0%, #c42631 100%);
+
+  /* Text */
+  --text-primary: #000000;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+
+  /* Borders */
+  --border: #e2e8f0;
+  --border-glow: rgba(50, 130, 184, 0.3);
+}
+
+[data-theme="light"] .sidebar-brand .logo-text {
+  color: var(--blue);
+  background: none;
+  -webkit-text-fill-color: initial;
+}
+[data-theme="light"] .topbar {
+  background: rgba(255,255,255,0.85);
+}
+[data-theme="light"] .pkg-overview-card::after {
+  opacity: 0.05;
+}
+[data-theme="light"] .pkg-overview-card:hover::after {
+  opacity: 0.15;
+}

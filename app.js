@@ -533,34 +533,41 @@ function barActualClass(v) {
 }
 
 /* ── ④ CHART FACTORY ─────────────────────────────────────── */
-const CHART_DEFAULTS = {
-  plugins: { legend: { display: false }, tooltip: {
-    backgroundColor: 'rgba(10,15,28,0.95)',
-    borderColor: 'rgba(255,255,255,0.08)',
-    borderWidth: 1,
-    titleColor: '#f0f4ff',
-    bodyColor: '#8898b8',
-    padding: 10,
-    callbacks: {
-      label: ctx => ' ' + ctx.dataset.label + ': ' + (ctx.parsed.y != null ? ctx.parsed.y.toFixed(2) + '%' : '—')
-    }
-  }},
-  scales: {
-    x: {
-      grid: { color: 'rgba(255,255,255,0.04)' },
-      ticks: { color: '#4a5878', font: { size: 10, family: 'Inter' } }
+function getChartDefaults() {
+  const root = getComputedStyle(document.documentElement);
+  const textColor = root.getPropertyValue('--text-primary').trim() || '#f0f4ff';
+  const mutedColor = root.getPropertyValue('--text-muted').trim() || '#4a5878';
+  const gridColor = root.getPropertyValue('--border').trim() || 'rgba(255,255,255,0.04)';
+
+  return {
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: 'rgba(10,15,28,0.95)',
+      borderColor: 'rgba(255,255,255,0.08)',
+      borderWidth: 1,
+      titleColor: '#f0f4ff',
+      bodyColor: '#8898b8',
+      padding: 10,
+      callbacks: {
+        label: ctx => ' ' + ctx.dataset.label + ': ' + (ctx.parsed.y != null ? ctx.parsed.y.toFixed(2) + '%' : '—')
+      }
+    }},
+    scales: {
+      x: {
+        grid: { color: gridColor },
+        ticks: { color: mutedColor, font: { size: 10, family: 'Inter' } }
+      },
+      y: {
+        grid: { color: gridColor },
+        ticks: { color: mutedColor, font: { size: 10, family: 'Inter' }, callback: v => v + '%' },
+        min: 0, max: 100
+      }
     },
-    y: {
-      grid: { color: 'rgba(255,255,255,0.04)' },
-      ticks: { color: '#4a5878', font: { size: 10, family: 'Inter' }, callback: v => v + '%' },
-      min: 0, max: 100
-    }
-  },
-  animation: { duration: 700, easing: 'easeOutQuart' },
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: { mode: 'index', intersect: false }
-};
+    animation: { duration: 700, easing: 'easeOutQuart' },
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false }
+  };
+}
 
 function buildSCurveChart(canvasId, weekly) {
   destroyChart(canvasId);
@@ -598,7 +605,7 @@ function buildSCurveChart(canvasId, weekly) {
         }
       ]
     },
-    options: { ...CHART_DEFAULTS }
+    options: { ...getChartDefaults() }
   });
 }
 
@@ -623,16 +630,16 @@ function buildBarChart(canvasId, konstruksi) {
       }]
     },
     options: {
-      ...CHART_DEFAULTS,
+      ...getChartDefaults(),
       scales: {
-        ...CHART_DEFAULTS.scales,
+        ...getChartDefaults().scales,
         y: { ...CHART_DEFAULTS.scales.y, max: 105 }
       },
       plugins: {
-        ...CHART_DEFAULTS.plugins,
+        ...getChartDefaults().plugins,
         legend: { display: false },
         tooltip: {
-          ...CHART_DEFAULTS.plugins.tooltip,
+          ...getChartDefaults().plugins.tooltip,
           callbacks: {
             label: ctx => ' ' + ctx.parsed.y.toFixed(2) + '%'
           }
@@ -1180,6 +1187,35 @@ function switchLocation(pkgId, locIdx, btn) {
 
 /* ── ⑦ INIT ──────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
+  // Setup theme toggle
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeLabel = document.getElementById('theme-label');
+  
+  const currentTheme = localStorage.getItem('mata-theme') || 'dark';
+  if (currentTheme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    if(themeLabel) themeLabel.textContent = 'Dark Mode';
+  }
+  
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      let theme = document.documentElement.getAttribute('data-theme');
+      if (theme === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('mata-theme', 'dark');
+        if(themeLabel) themeLabel.textContent = 'Light Mode';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('mata-theme', 'light');
+        if(themeLabel) themeLabel.textContent = 'Dark Mode';
+      }
+      
+      // Re-render charts on theme change to update colors
+      renderedPages.clear(); 
+      navigateTo(currentPage);
+    });
+  }
+
   // Setup nav items
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', () => navigateTo(item.dataset.page));
